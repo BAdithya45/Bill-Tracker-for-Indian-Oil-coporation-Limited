@@ -46,6 +46,44 @@ Bill Tracker is a web-based application for tracking, managing, and analyzing bi
 
 ---
 
+## Apache Tomcat Deployment
+You can deploy this application to an external Apache Tomcat server as a standard Java web application:
+
+1. **Build the WAR file**
+   ```sh
+   mvn clean package
+   ```
+   This will generate a `bill.war` file in the `target/` directory.
+
+2. **Copy the WAR to Tomcat**
+   - Locate your Tomcat installation directory (e.g., `C:/apache-tomcat-9.0.XX/`)
+   - Copy `target/bill.war` to the `webapps/` folder inside your Tomcat directory
+
+3. **Start Tomcat**
+   - Run `bin/startup.bat` (Windows) or `bin/startup.sh` (Linux/Mac)
+   - Tomcat will automatically deploy the WAR file
+
+4. **Access the Application**
+   - Open your browser and go to [http://localhost:8080/bill](http://localhost:8080/bill)
+
+**Tips:**
+- Make sure port 8080 is free before starting Tomcat
+- You can change the context path or port in Tomcat's `conf/server.xml` if needed
+- Check Tomcat's `logs/` folder for deployment errors
+
+---
+
+## Why Use Apache Tomcat?
+Apache Tomcat is a popular, production-ready Java web server and servlet container. Deploying your Bill Tracker application to Tomcat allows you to:
+- Run the application as a standard web app accessible on your network or the internet
+- Integrate with other enterprise systems and web servers
+- Use Tomcat's robust management, logging, and security features
+- Host multiple Java web applications on the same server
+
+Tomcat is ideal for organizations that want to deploy, manage, and scale Java web applications in a professional environment.
+
+---
+
 ## Features
 - User authentication (admin and regular users)
 - Bill management (add, update, delete, view)
