@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Indian Oil Bill Tracker - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .main-content {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        .main-content.show {
+            display: block !important;
+            visibility: visible !important;
+        }
+        #loginSection {
+            display: flex !important;
+            visibility: visible !important;
+        }
+        #loginSection.hide {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        /* Force login page to show first */
+        body {
+            overflow: hidden;
+        }
+        body.logged-in {
+            overflow: auto;
+        }
+        .content-area {
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+        .nav-tabs .nav-link {
+            border-radius: 8px 8px 0 0;
+            border: 1px solid transparent;
+            margin-right: 5px;
+        }
+        .nav-tabs .nav-link.active {
+            background: #667eea;
+            color: white !important;
+            border-color: #667eea;
+        }
+        .nav-tabs .nav-link:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        .sticky-top {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .table th, .table td {
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 10px;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #5a6fd8, #6a4190);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection" class="login-container d-flex align-items-center justify-content-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="login-card p-4">
+                        <div class="text-center mb-3">
+                            <img src="IOCLLOGO.png?v=3" alt="Indian Oil Corporation" class="login-logo">
+                        </div>
+                        <h2 class="text-center mb-4 text-primary">Indian Oil Bill Tracker</h2>
+                        
+                        <!-- Login Form -->
+                        <div id="loginForm">
+                            <form id="loginFormElement">
+                                <div class="mb-3">
+                                    <label for="loginUsername" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="loginUsername" name="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="loginPassword" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="loginPassword"  name="password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 mb-3">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                                </button>
+                            </form>
+                            <div class="text-center">
+                                <button class="btn btn-link" id="showRegister">New User? Register Here</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Register Form -->
+                        <div id="registerForm" style="display: none;">
+                            <form id="registerFormElement">
+                                <div class="mb-3">
+                                    <label for="registerUsername" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="registerUsername" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerPassword" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="registerPassword" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                    <input type="password" class="form-control" id="confirmPassword" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 mb-3">
+                                    <i class="fas fa-user-plus me-2"></i>Register
+                                </button>
+                            </form>
+                            <div class="text-center">
+                                <button class="btn btn-link" id="showLogin">Already have an account? Login</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="mainContent" class="main-content">
+        <div class="container-fluid p-0">
+            <!-- Header -->
+            <div class="bg-white shadow-sm">
+                <div class="d-flex justify-content-between align-items-center p-3">
+                    <div class="d-flex align-items-center">
+                        <img src="IOCLLOGO.png?v=3" alt="Indian Oil Corporation" class="me-3" style="width: 40px; height: 40px; object-fit: contain; border-radius: 8px;">
+                        <h4 class="mb-0 text-primary">Indian Oil Bill Tracker</h4>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="me-3">Welcome, <strong id="currentUser"></strong></span>
+                        <button class="btn btn-outline-danger btn-sm" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="bg-light border-bottom">
+                <div class="p-3">
+                    <ul class="nav nav-tabs border-0" id="dashboardTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="view-tab" data-bs-toggle="tab" data-bs-target="#view-panel" type="button" role="tab">
+                                <i class="fas fa-table me-2"></i>View
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="update-tab" data-bs-toggle="tab" data-bs-target="#update-panel" type="button" role="tab">
+                                <i class="fas fa-plus me-2"></i>Update
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics-panel" type="button" role="tab">
+                                <i class="fas fa-chart-bar me-2"></i>Analytics
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="network-tab" data-bs-toggle="tab" data-bs-target="#network-panel" type="button" role="tab">
+                                <i class="fas fa-network-wired me-2"></i>Update Network
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin-panel" type="button" role="tab" style="display: none;">
+                                <i class="fas fa-users-cog me-2"></i>Admin Panel
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content p-4" id="dashboardTabContent">
+                <!-- View Tab Panel -->
+                <div class="tab-pane fade show active" id="view-panel" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="searchFilter" placeholder="Search bills...">
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" id="yearFilter">
+                                        <option value="">All Years</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" id="networkFilter">
+                                        <option value="">All Networks</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" id="vendorFilter">
+                                        <option value="">All Vendors</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" id="quarterFilter">
+                                        <option value="">All Quarters</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row g-3 align-items-center mt-2">
+                                <div class="col-md-2">
+                                    <select class="form-select" id="locationFilter">
+                                        <option value="">All Locations</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" id="statusFilter">
+                                        <option value="">All Status</option>
+                                        <option value="Completed">Completed</option>
+                                        <option value="Pending">Pending</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" id="glCodeFilter">
+                                        <option value="">All GL Codes</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" id="costCenterFilter">
+                                        <option value="">All Cost Centers</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" id="commitItemFilter">
+                                        <option value="">All Commit Items</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <button class="btn btn-outline-secondary me-2" id="clearFilters">Clear Filters</button>
+                                    <button class="btn btn-success" id="exportBtn">
+                                        <i class="fas fa-file-excel me-2"></i>Export to Excel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                                <table class="table table-striped table-hover mb-0" id="billsViewTable">
+                                    <thead class="table-dark sticky-top">
+                                        <tr>
+                                            <th style="min-width: 80px;">S.No</th>
+                                            <th style="min-width: 120px;">Network</th>
+                                            <th style="min-width: 120px;">Vendor</th>
+                                            <th style="min-width: 100px;">Quarter</th>
+                                            <th style="min-width: 120px;">Location</th>
+                                            <th style="min-width: 130px;">Invoice Number</th>
+                                            <th style="min-width: 140px;">Bill With Tax (18% GST)</th>
+                                            <th style="min-width: 140px;">Bill Without Tax</th>
+                                            <th style="min-width: 100px;">SES 1</th>
+                                            <th style="min-width: 100px;">SES 2</th>
+                                            <th style="min-width: 150px;">Billing Period</th>
+                                            <th style="min-width: 100px;">Status</th>
+                                            <th style="min-width: 150px;">Remarks</th>
+                                            <th style="min-width: 120px;">GL Code</th>
+                                            <th style="min-width: 120px;">Commit Item</th>
+                                            <th style="min-width: 120px;">Cost Center</th>
+                                            <th style="min-width: 100px;">PDF</th>
+                                            <th style="min-width: 100px;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="billsViewTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span id="billsCount">Total: 0 bills</span>
+                                <span id="totalAmount">Total Amount: ₹0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Update Tab Panel -->
+                <div class="tab-pane fade" id="update-panel" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Add New Billing Entry</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="updateBillForm">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label for="updateNetwork" class="form-label">Network *</label>
+                                        <select class="form-select" id="updateNetwork" required>
+                                            <option value="">Select Network</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="updateVendor" class="form-label">Vendor *</label>
+                                        <select class="form-select" id="updateVendor" required>
+                                            <option value="">Select Vendor</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="updateQuarter" class="form-label">Quarter *</label>
+                                        <select class="form-select" id="updateQuarter" required>
+                                            <option value="">Select Quarter</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="updateLocation" class="form-label">Location *</label>
+                                        <select class="form-select" id="updateLocation" required>
+                                            <option value="">Select Location</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="updateInvoiceNumber" class="form-label">Invoice Number *</label>
+                                        <input type="text" class="form-control" id="updateInvoiceNumber" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="updateBillWithTax" class="form-label">Bill Amount (With Tax) *</label>
+                                        <input type="number" step="0.01" class="form-control" id="updateBillWithTax" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="updateBillWithoutTax" class="form-label">Bill Amount (Without Tax) *</label>
+                                        <input type="number" step="0.01" class="form-control" id="updateBillWithoutTax" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="updateSes1" class="form-label">SES 1 *</label>
+                                        <input type="number" step="1" class="form-control" id="updateSes1" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="updateSes2" class="form-label">SES 2 *</label>
+                                        <input type="number" step="1" class="form-control" id="updateSes2" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="updateBillingPeriod" class="form-label">Billing Period (Auto-filled)</label>
+                                        <input type="text" class="form-control" id="updateBillingPeriod" readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="updateStatus" class="form-label">Status *</label>
+                                        <select class="form-select" id="updateStatus" required>
+                                            <option value="">Select Status</option>
+                                            <option value="Completed">Completed</option>
+                                            <option value="Pending">Pending</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="updateGlCode" class="form-label">GL Code *</label>
+                                        <select class="form-select" id="updateGlCode" required>
+                                            <option value="">Select GL Code</option>
+                                            <option value="5261300020">5261300020</option>
+                                            <option value="5281525560">5281525560</option>
+                                            <option value="5290700080">5290700080</option>
+                                            <option value="5290700020">5290700020</option>
+                                            <option value="5290700160">5290700160</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="updateCommitItem" class="form-label">Commit Item *</label>
+                                        <select class="form-select" id="updateCommitItem" required>
+                                            <option value="">Select Commit Item</option>
+                                            <option value="C_COMMEXP">C_COMMEXP</option>
+                                            <option value="C_R&MEQPC">C_R&MEQPC</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="updateCostCenter" class="form-label">Cost Center *</label>
+                                        <select class="form-select" id="updateCostCenter" required>
+                                            <option value="">Select Cost Center</option>
+                                            <option value="M75010-SRO">M75010-SRO</option>
+                                            <option value="M78010-TNSO">M78010-TNSO</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="updatePdfFile" class="form-label">PDF Upload</label>
+                                        <input type="file" class="form-control" id="updatePdfFile" accept=".pdf">
+                                        <div id="currentPdfInfo" class="mt-2" style="display: none;">
+                                            <small class="text-muted">Current PDF: <span id="currentPdfName"></span></small>
+                                            <button type="button" class="btn btn-sm btn-outline-primary ms-2" id="downloadCurrentPdf" style="display: none;">
+                                                <i class="fas fa-download"></i> Download
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="updateFromDate" class="form-label">From Date *</label>
+                                        <input type="date" class="form-control" id="updateFromDate" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="updateToDate" class="form-label">To Date *</label>
+                                        <input type="date" class="form-control" id="updateToDate" required>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label for="updateRemarks" class="form-label">Remarks</label>
+                                        <textarea class="form-control" id="updateRemarks" rows="3"></textarea>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Save Entry
+                                    </button>
+                                    <button type="reset" class="btn btn-outline-secondary ms-2">
+                                        <i class="fas fa-refresh me-2"></i>Clear Form
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Tab Panel -->
+                <div class="tab-pane fade" id="analytics-panel" role="tabpanel">
+                    <div class="row g-4">
+                        <!-- Filter Controls -->
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Analytics Filters</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-lg-2 col-md-3">
+                                            <label for="analyticsYearFilter" class="form-label">Year</label>
+                                            <select class="form-select" id="analyticsYearFilter">
+                                                <option value="">All Years</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2 col-md-3">
+                                            <label for="analyticsQuarterFilter" class="form-label">Quarter</label>
+                                            <select class="form-select" id="analyticsQuarterFilter">
+                                                <option value="">All Quarters</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2 col-md-3">
+                                            <label for="analyticsNetworkFilter" class="form-label">Network</label>
+                                            <select class="form-select" id="analyticsNetworkFilter">
+                                                <option value="">All Networks</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2 col-md-3">
+                                            <label for="analyticsVendorFilter" class="form-label">Vendor</label>
+                                            <select class="form-select" id="analyticsVendorFilter">
+                                                <option value="">All Vendors</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2 col-md-3">
+                                            <label for="analyticsGlCodeFilter" class="form-label">GL Code</label>
+                                            <select class="form-select" id="analyticsGlCodeFilter">
+                                                <option value="">All GL Codes</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2 col-md-3">
+                                            <label for="analyticsCostCenterFilter" class="form-label">Cost Center</label>
+                                            <select class="form-select" id="analyticsCostCenterFilter">
+                                                <option value="">All Cost Centers</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2 col-md-3">
+                                            <label for="analyticsCommitItemFilter" class="form-label">Commit Item</label>
+                                            <select class="form-select" id="analyticsCommitItemFilter">
+                                                <option value="">All Commit Items</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2 col-md-3">
+                                            <label class="form-label">&nbsp;</label>
+                                            <div>
+                                                <button type="button" class="btn btn-primary btn-sm" id="applyAnalyticsFilters">
+                                                    <i class="fas fa-filter me-1"></i>Apply
+                                                </button>
+                                                <button type="button" class="btn btn-outline-secondary btn-sm ms-1" id="clearAnalyticsFilters">
+                                                    <i class="fas fa-times me-1"></i>Clear
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Analytics Table -->
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Summary by Network and Vendor</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped" id="analyticsTable">
+                                            <thead class="table-dark">
+                                                <tr>
+                                                    <th>Year</th>
+                                                    <th>Network</th>
+                                                    <th>Vendor</th>
+                                                    <th>Total Bill With Tax</th>
+                                                    <th>Total Bill Without Tax</th>
+                                                    <th>Associated GL Codes</th>
+                                                    <th>Associated Commit Items</th>
+                                                    <th>Associated Cost Centers</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="analyticsTableBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Bills by Quarter</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="quarterChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Yearly Trends</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="yearChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Update Network Tab Panel -->
+                <div class="tab-pane fade" id="network-panel" role="tabpanel">
+                    <div class="container-fluid">
+                        <h2 class="text-center mb-4 text-primary">Network & Vendor Management</h2>
+                        
+                        <div class="row">
+                            <!-- Left Side - Add New Network -->
+                            <div class="col-md-5">
+                                <div class="card border-success">
+                                    <div class="card-header bg-success text-white">
+                                        <h5 class="mb-0">Add New Network</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="addNetworkForm">
+                                            <div class="mb-3">
+                                                <label for="networkName" class="form-label">Network Name:</label>
+                                                <input type="text" class="form-control" id="networkName" placeholder="Enter network name" required>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label class="form-label">Vendors</label>
+                                                <div id="vendorInputs">
+                                                    <div class="input-group mb-2 vendor-input">
+                                                        <input type="text" class="form-control" placeholder="Enter vendor name">
+                                                        <button type="button" class="btn btn-outline-danger remove-vendor" title="Remove">&#215;</button>
+                                                    </div>
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-outline-primary" id="addVendorField">
+                                                    + Add Vendor Field
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label class="form-label">Quarter Configuration</label>
+                                                <div class="mb-2">
+                                                    <label for="quarterCount" class="form-label">Number of Quarters:</label>
+                                                    <select class="form-select" id="quarterCount">
+                                                        <option value="2">2</option>
+                                                        <option value="4" selected>4</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div id="quarterInputs">
+                                                    <!-- Quarter inputs will be generated dynamically -->
+                                                </div>
+                                            </div>
+                                            
+                                            <button type="submit" class="btn btn-success w-100">
+                                                <i class="fas fa-plus"></i> Add Network
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right Side - Manage Existing Networks -->
+                            <div class="col-md-7">
+                                <div class="card border-primary">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">Manage Existing Networks</h5>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Network</th>
+                                                        <th>Vendor Count</th>
+                                                        <th>Quarters</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="networksTableBody">
+                                                    <!-- Networks will be populated here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Vendor Management Section -->
+                                <div class="card border-info mt-3">
+                                    <div class="card-header bg-info text-white">
+                                        <h6 class="mb-0">Select a network to view vendors</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Vendor</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="vendorsTableBody">
+                                                    <!-- Vendors will be populated here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Panel Tab -->
+                <div class="tab-pane fade" id="admin-panel" role="tabpanel">
+                    <div class="container-fluid">
+                        <h2 class="text-center mb-4 text-danger">Admin Panel</h2>
+                        
+                        <div class="row">
+                            <!-- User Management -->
+                            <div class="col-md-8">
+                                <div class="card border-danger">
+                                    <div class="card-header bg-danger text-white">
+                                        <h5 class="mb-0">User Management</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Add User Form -->
+                                        <div class="card mb-3">
+                                            <div class="card-header">
+                                                <h6 class="mb-0">Add New User</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <form id="addUserForm" class="row g-3">
+                                                    <div class="col-md-4">
+                                                        <label for="newUsername" class="form-label">Username *</label>
+                                                        <input type="text" class="form-control" id="newUsername" required>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label for="newPassword" class="form-label">Password *</label>
+                                                        <input type="password" class="form-control" id="newPassword" required>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label for="newUserRole" class="form-label">Role *</label>
+                                                        <select class="form-select" id="newUserRole" required>
+                                                            <option value="">Select Role</option>
+                                                            <option value="USER">User</option>
+                                                            <option value="ADMIN">Admin</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <button type="submit" class="btn btn-success">
+                                                            <i class="fas fa-user-plus me-2"></i>Add User
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                        <!-- Users List -->
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h6 class="mb-0">Existing Users</h6>
+                                            </div>
+                                            <div class="card-body p-0">
+                                                <div class="table-responsive">
+                                                    <table class="table table-striped mb-0">
+                                                        <thead class="table-dark">
+                                                            <tr>
+                                                                <th>Username</th>
+                                                                <th>Role</th>
+                                                                <th>Status</th>
+                                                                <th>Actions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="usersTableBody">
+                                                            <!-- Users will be populated here -->
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Password Management -->
+                            <div class="col-md-4">
+                                <div class="card border-warning">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h5 class="mb-0">Password Management</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Change Own Password -->
+                                        <div class="card mb-3">
+                                            <div class="card-header">
+                                                <h6 class="mb-0">Change My Password</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <form id="changeMyPasswordForm">
+                                                    <div class="mb-3">
+                                                        <label for="currentPassword" class="form-label">Current Password *</label>
+                                                        <input type="password" class="form-control" id="currentPassword" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="newPasswordSelf" class="form-label">New Password *</label>
+                                                        <input type="password" class="form-control" id="newPasswordSelf" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="confirmPasswordSelf" class="form-label">Confirm Password *</label>
+                                                        <input type="password" class="form-control" id="confirmPasswordSelf" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-warning w-100">
+                                                        <i class="fas fa-key me-2"></i>Change Password
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                        <!-- Reset User Password (Admin Only) -->
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h6 class="mb-0">Reset User Password</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <form id="resetUserPasswordForm">
+                                                    <div class="mb-3">
+                                                        <label for="resetUsername" class="form-label">Username *</label>
+                                                        <select class="form-select" id="resetUsername" required>
+                                                            <option value="">Select User</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="resetNewPassword" class="form-label">New Password *</label>
+                                                        <input type="password" class="form-control" id="resetNewPassword" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="resetConfirmPassword" class="form-label">Confirm Password *</label>
+                                                        <input type="password" class="form-control" id="resetConfirmPassword" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-danger w-100">
+                                                        <i class="fas fa-unlock-alt me-2"></i>Reset Password
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="app.js?v=1002"></script>
+</body>
+</html>

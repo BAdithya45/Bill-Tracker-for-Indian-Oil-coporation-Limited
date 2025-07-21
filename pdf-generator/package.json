@@ -1,0 +1,14 @@
+// Convert test_pdf.html to PDF using wkhtmltopdf
+// We'll use a simple package.json script for this purpose
+
+{
+  "name": "pdf-generator",
+  "version": "1.0.0",
+  "description": "Convert HTML to PDF for testing",
+  "scripts": {
+    "generate": "node generate-pdf.js"
+  },
+  "dependencies": {
+    "puppeteer": "^19.7.5"
+  }
+}
