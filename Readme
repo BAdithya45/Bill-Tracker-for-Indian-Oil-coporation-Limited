@@ -72,7 +72,6 @@ You can deploy this application to an external Apache Tomcat server as a standar
 - Check Tomcat's `logs/` folder for deployment errors
 
 ---
-
 ## Why Use Apache Tomcat?
 Apache Tomcat is a popular, production-ready Java web server and servlet container. Deploying your Bill Tracker application to Tomcat allows you to:
 - Run the application as a standard web app accessible on your network or the internet
